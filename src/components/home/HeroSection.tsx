@@ -1,22 +1,40 @@
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useSpring } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Phone, Shield, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import heroImage from "@/assets/hero-vehicles.jpg";
+import ShinyText from "@/components/ShinyText";
 
 const HeroSection = () => {
+  /* 🧲 MAGNET MOTION */
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  const springX = useSpring(x, { stiffness: 120, damping: 15 });
+  const springY = useSpring(y, { stiffness: 120, damping: 15 });
+
+  const handleMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const offsetX = e.clientX - rect.left - rect.width / 2;
+    const offsetY = e.clientY - rect.top - rect.height / 2;
+
+    x.set(offsetX * 0.15);
+    y.set(offsetY * 0.15);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-trust-light via-background to-secondary">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-30">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-accent/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
-      </div>
 
+      {/* CONTENT */}
       <div className="container mx-auto px-4 pt-24 pb-16 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
 
-          {/* Content FIRST */}
+          {/* 🔵 LEFT CONTENT */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -34,12 +52,21 @@ const HeroSection = () => {
               IRDAI Registered | 2 Lakh+ Happy Customers
             </motion.div>
 
+            {/* Heading */}
             <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
               Secure Your{" "}
-              <span className="text-gradient">Car & Bike</span>{" "}
+              <ShinyText
+                text="Car & Bike"
+                speed={2}
+                color="#1f2937"
+                shineColor="#ffffff"
+                spread={120}
+                pauseOnHover
+              />{" "}
               with Trusted Insurance Plans
             </h1>
 
+            {/* Description */}
             <p className="text-lg text-muted-foreground max-w-xl">
               Get instant policy issuance, cashless claims at 5000+ garages, and
               affordable premiums. Compare plans from top insurers and save up
@@ -61,7 +88,7 @@ const HeroSection = () => {
               )}
             </div>
 
-            {/* CTAs */}
+            {/* CTA */}
             <div className="flex flex-wrap gap-4">
               <Link to="/calculator">
                 <Button variant="cta" size="xl" className="gap-2">
@@ -78,77 +105,54 @@ const HeroSection = () => {
               </a>
             </div>
 
-            {/* Trust Indicators */}
+            {/* Stats */}
             <div className="flex items-center gap-6 pt-4">
-              <div className="text-center">
-                <p className="font-display text-2xl font-bold text-primary">
-                  ₹50 Cr+
-                </p>
-                <p className="text-xs text-muted-foreground">Claims Settled</p>
-              </div>
-              <div className="w-px h-10 bg-border" />
-              <div className="text-center">
-                <p className="font-display text-2xl font-bold text-primary">
-                  4.8★
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Customer Rating
-                </p>
-              </div>
-              <div className="w-px h-10 bg-border" />
-              <div className="text-center">
-                <p className="font-display text-2xl font-bold text-primary">
-                  5000+
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Network Garages
-                </p>
-              </div>
+              <Stat value="₹50 Cr+" label="Claims Settled" />
+              <Divider />
+              <Stat value="4.8★" label="Customer Rating" />
+              <Divider />
+              <Stat value="5000+" label="Network Garages" />
             </div>
           </motion.div>
 
-          {/* Image AFTER text */}
+          {/* 🧲 RIGHT IMAGE WITH MAGNET EFFECT */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
-            className="relative order-last"
+            className="relative flex justify-center"
           >
-            <div className="relative">
+            <motion.div
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+              style={{ x: springX, y: springY }}
+              whileHover={{ scale: 1.03 }}
+              className="relative cursor-pointer"
+            >
               <img
                 src={heroImage}
                 alt="Car and Bike Insurance"
-                className="w-full h-auto rounded-2xl shadow-2xl"
+                className="w-full h-auto rounded-2xl shadow-2xl select-none"
+                draggable={false}
               />
 
-              {/* Floating cards – desktop only */}
+              {/* Floating Cards */}
               <div className="hidden md:block">
-                <div className="absolute -left-8 top-1/4 bg-card p-4 rounded-xl shadow-card-hover">
-                  <div className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-success" />
-                    <div>
-                      <p className="font-semibold text-sm">Claim Approved!</p>
-                      <p className="text-xs text-muted-foreground">
-                        ₹45,000 settled in 2 days
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                <FloatingCard
+                  position="-left-8 top-1/4"
+                  icon={<CheckCircle className="w-5 h-5 text-success" />}
+                  title="Claim Approved!"
+                  desc="₹45,000 settled in 2 days"
+                />
 
-                <div className="absolute -right-4 bottom-1/4 bg-card p-4 rounded-xl shadow-card-hover">
-                  <div className="flex items-center gap-3">
-                    <Shield className="w-5 h-5 text-accent" />
-                    <div>
-                      <p className="font-semibold text-sm">Policy Active</p>
-                      <p className="text-xs text-muted-foreground">
-                        Comprehensive Cover
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                <FloatingCard
+                  position="-right-4 bottom-1/4"
+                  icon={<Shield className="w-5 h-5 text-accent" />}
+                  title="Policy Active"
+                  desc="Comprehensive Cover"
+                />
               </div>
-
-            </div>
+            </motion.div>
           </motion.div>
 
         </div>
@@ -156,5 +160,27 @@ const HeroSection = () => {
     </section>
   );
 };
+
+/* SMALL COMPONENTS */
+const Stat = ({ value, label }) => (
+  <div className="text-center">
+    <p className="font-display text-2xl font-bold text-primary">{value}</p>
+    <p className="text-xs text-muted-foreground">{label}</p>
+  </div>
+);
+
+const Divider = () => <div className="w-px h-10 bg-border" />;
+
+const FloatingCard = ({ position, icon, title, desc }) => (
+  <div className={`absolute ${position} bg-card p-4 rounded-xl shadow-card-hover`}>
+    <div className="flex items-center gap-3">
+      {icon}
+      <div>
+        <p className="font-semibold text-sm">{title}</p>
+        <p className="text-xs text-muted-foreground">{desc}</p>
+      </div>
+    </div>
+  </div>
+);
 
 export default HeroSection;

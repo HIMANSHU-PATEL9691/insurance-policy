@@ -3,6 +3,8 @@ import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import ShinyText from "@/components/ShinyText"; 
+// 👆 agar file ui folder me ho to: "@/components/ui/ShinyText"
 
 // Logo
 import logo from "@/assets/logo.png";
@@ -20,8 +22,7 @@ const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
 
-  // ✅ Ref for mobile menu
-  const mobileMenuRef = useRef(null);
+  const mobileMenuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -36,13 +37,13 @@ const Header = () => {
     setIsMobileMenuOpen(false);
   }, [location.pathname]);
 
-  // ✅ Close menu on outside click
+  // Close menu on outside click
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutside = (event: MouseEvent) => {
       if (
         isMobileMenuOpen &&
         mobileMenuRef.current &&
-        !mobileMenuRef.current.contains(event.target)
+        !mobileMenuRef.current.contains(event.target as Node)
       ) {
         setIsMobileMenuOpen(false);
       }
@@ -62,24 +63,31 @@ const Header = () => {
     >
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between">
-          {/* Logo */}
+          
+          {/* LOGO */}
           <Link to="/" className="flex items-center gap-3">
             <img
               src={logo}
               alt="Policy Pioneer Insurance Logo"
               className="h-10 w-auto object-contain"
             />
+
             <div className="flex flex-col leading-tight">
-              <span className="font-display font-bold text-lg text-primary">
-                Policy Pioneer
-              </span>
+              <ShinyText
+                text="Policy Pioneer"
+                speed={3}
+                color="#0f172a"        // dark trust color
+                shineColor="#38bdf8"  // subtle blue shine
+                spread={140}
+                pauseOnHover
+              />
               <span className="text-xs text-muted-foreground">
                 Insurance
               </span>
             </div>
           </Link>
 
-          {/* Desktop Navigation */}
+          {/* DESKTOP NAV */}
           <div className="hidden lg:flex items-center gap-8">
             {navLinks.map((link) => (
               <Link
@@ -96,7 +104,7 @@ const Header = () => {
             ))}
           </div>
 
-          {/* CTA */}
+          {/* DESKTOP CTA */}
           <div className="hidden lg:flex items-center gap-3">
             <a href="tel:9691365052">
               <Button variant="outline" size="sm" className="gap-2">
@@ -109,7 +117,7 @@ const Header = () => {
             </Button>
           </div>
 
-          {/* Mobile Toggle */}
+          {/* MOBILE TOGGLE */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="lg:hidden p-2 rounded-lg hover:bg-muted"
@@ -123,11 +131,11 @@ const Header = () => {
         </nav>
       </div>
 
-      {/* Mobile Menu */}
+      {/* MOBILE MENU */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            ref={mobileMenuRef} // ✅ ref applied here
+            ref={mobileMenuRef}
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
